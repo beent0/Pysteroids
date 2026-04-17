@@ -37,7 +37,7 @@ class Interface:
         self.clock = pygame.time.Clock()
         self.font = pygame.font.SysFont("Arial", 18)
         
-        # Start receiver thread (calc_7 pattern)
+        # Start receiver thread
         self.receiver = BroadcastReceiver(self.conn, debug=self.debug)
         self.receiver.start()
         

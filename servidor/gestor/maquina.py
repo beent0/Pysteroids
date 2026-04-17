@@ -19,24 +19,24 @@ class Maquina:
         self.lista_clientes = ListaClientes()
         self.dados = Dados()
         
-        # Start Broadcast Thread (calc_7 pattern)
+        # Start Broadcast Thread
         self.broadcast = ThreadBroadcast(self.lista_clientes, self.dados)
         self.broadcast.start()
 
     def execute(self):
         """Main loop: listens for and accepts incoming client connections."""
         self.s.listen(5)
-        print(f"Servidor Pysteroids (Raw TCP) ligado na porta {servidor.PORT}")
+        print(f"Servidor Pysteroids ligado na porta {servidor.PORT}")
         
         while True:
             try:
                 connection, address = self.s.accept()
-                print(f"Cliente {address} conectado via rede")
+                print(f"Cliente {address} conectado")
                 
                 # Add to client list for broadcast
                 self.lista_clientes.adicionar(address, connection)
                 
-                # Create thread with shared state (calc_7 pattern)
+                # Create thread with shared state
                 processa = ProcessaCliente(connection, address, self.lista_clientes, self.dados)
                 processa.start()
             except Exception as e:

@@ -1,4 +1,4 @@
-# Pysteroids - Projeto de Sistemas Distribuídos (SD) - Versão Raw TCP
+# Pysteroids - Jogo de Sistemas Distribuídos (SD)
 
 ## Descrição do Projeto
 Este projeto consiste num jogo multiplayer (Asteroids) desenvolvido em **Python**, utilizando **sockets TCP puros (Raw TCP)** para a gestão de rede e a biblioteca **Pygame** para a componente gráfica. A arquitetura baseia-se num modelo de **servidor autoritário**, onde toda a lógica de jogo e física é processada centralmente para garantir a consistência entre todos os jogadores.
@@ -8,12 +8,12 @@ Este projeto consiste num jogo multiplayer (Asteroids) desenvolvido em **Python*
 ## Detalhes Técnicos e Critérios de Avaliação
 
 ### (a) Comunicação entre Servidor e Múltiplos Clientes
-Implementámos uma infraestrutura que suporta múltiplos clientes de forma concorrente utilizando `threading`. O servidor aceita ligações TCP e cria uma thread dedicada para cada cliente, permitindo a gestão independente de naves e pontuações. O sistema suporta múltiplos jogadores em simultâneo de forma eficiente.
+Implementámos uma infraestrutura que suporta múltiplos clientes de forma concorrente utilizando `threading`. O servidor aceita ligações TCP e cria uma thread dedicada para cada cliente, permitindo a gestão independente de naves e pontuações. O sistema suporta múltiplos jogadores em simultâneo de forma eficiente através de uma gestão thread-safe de sockets.
 
 ### (b) Protocolos e Tipos de Comunicação
-A comunicação é estabelecida via **Sockets TCP** com um protocolo de aplicação customizado.
+A comunicação é estabelecida via **Sockets TCP** com um protocolo de aplicação customizado para garantir integridade e performance.
 
-**1. Estrutura do Pacote Base:**
+**1. Estrutura do Pacote:**
 Para evitar problemas de fragmentação TCP, implementámos um protocolo Length-Prefixed:
 - **Cabeçalho:** 8 bytes (Inteiro de 64-bits, Big Endian) indicando o tamanho do payload.
 - **Payload:** String codificada em UTF-8 contendo a mensagem em formato **JSON**.
@@ -29,7 +29,7 @@ Para evitar problemas de fragmentação TCP, implementámos um protocolo Length-
     ```
 
 *   **Cliente -> Servidor (Input de Jogo):**
-    *Enviado apenas quando há alteração no estado das teclas para poupar largura de banda.*
+    *Enviado apenas quando há comandos ativos para otimizar o tráfego.*
     ```json
     {
       "type": "input",
@@ -39,7 +39,7 @@ Para evitar problemas de fragmentação TCP, implementámos um protocolo Length-
     ```
 
 *   **Servidor -> Cliente (Broadcast do Estado Global):**
-    *Enviado a 60 FPS (síncrono com a framerate).*
+    *Enviado a 60 FPS para garantir fluidez visual em todos os clientes.*
     ```json
     {
       "ships": {
@@ -69,58 +69,40 @@ Para evitar problemas de fragmentação TCP, implementámos um protocolo Length-
           "life": 55,
           "player_id": "a1b2c3d4"
         }
-      ]
+      ],
+      "winner": null
     }
     ```
 
-### (c) Máquina de Jogo e Estrutura (Padrão Calc 7)
-O projeto foi estruturado em pacotes modulares para garantir a separação de responsabilidades:
+### (c) Máquina de Jogo e Estrutura Modular
+O projeto utiliza uma arquitetura modular para separação clara de responsabilidades:
 
-- **`common/`**: Helpers de rede partilhados para envio/receção de objetos JSON com prefixo de tamanho.
+- **`common/`**: Utilitários de rede para comunicação baseada em pacotes prefixados.
 - **`servidor/`**:
-    - **`dados/dados.py`**: A "Base de Dados" em memória e lógica de física (Game Machine).
-    - **`gestor/maquina.py`**: Orquestrador que aceita conexões e inicia threads.
-    - **`gestor/processa_cliente.py`**: Thread que escuta comandos (TCP Unicast) de um jogador específico.
-    - **`gestor/thread_broadcast.py`**: Thread que atualiza a física e envia o estado global (TCP Broadcast) a todos os clientes a 60 FPS.
-    - **`gestor/lista_clientes.py`**: Gestor thread-safe da lista de sockets ativos.
+    - **`dados/dados.py`**: Gestor de estado (Base de Dados em memória) e motor de física.
+    - **`gestor/maquina.py`**: Orquestrador de rede e aceitação de conexões.
+    - **`gestor/processa_cliente.py`**: Thread de tratamento de comandos individuais (Unicast).
+    - **`gestor/thread_broadcast.py`**: Thread de atualização de física e distribuição de estado global (Broadcast).
 - **`cliente/`**:
-    - **`broadcast_receiver.py`**: Thread dedicada a receber atualizações constantes do servidor.
-    - **`interface/interface.py`**: Ciclo principal do Pygame e envio de inputs.
+    - **`broadcast_receiver.py`**: Recetor assíncrono de atualizações de rede.
+    - **`interface/interface.py`**: Motor gráfico e controlador de inputs.
 
 ---
 
 ## Como Executar o Código
 
 ### 1. Instalar as Dependências
-Certifique-se de que tem o Python 3 instalado e execute:
 ```bash
 pip install pygame
 ```
 
 ### 2. Iniciar o Servidor
-Execute o pacote do servidor:
 ```bash
 python3 -m servidor
 ```
 
 ### 3. Iniciar os Clientes
-Execute o pacote do cliente (suporta IP opcional e modo debug):
 ```bash
 python3 -m cliente [ip_do_servidor] [--debug]
 ```
-*Nota: Utilize as teclas de setas para movimentação e a barra de ESPAÇO para disparar.*
-
----
-
-## Road-Map (TO-DO)
-- [x] Implementação da interface gráfica em Pygame.
-- [x] Sistema de rede customizado sobre TCP.
-- [x] Protocolo de serialização JSON com prefixo de tamanho.
-- [x] Mecânicas de disparo e gestão de lasers.
-- [x] Deteção de colisões (Nave-Asteroide e Laser-Asteroide).
-- [x] Divisão dinâmica de asteroides.
-- [ ] Adicionar modos de jogo competitivos (PvP).
-- [ ] Implementar tabela de recordes persistente.
-- [ ] Adicionar efeitos sonoros e visuais.
-- [ ] Menu
-- [ ] Power-Ups
+*Nota: Utilize as SETAS para movimento e ESPAÇO para disparar.*
