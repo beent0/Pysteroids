@@ -27,8 +27,8 @@ class Maquina:
         """Main loop: listens for and accepts incoming client connections."""
         self.s.listen(5)
         print(f"Servidor Pysteroids ligado na porta {servidor.PORT}")
-        
-        while True:
+        fim = False
+        while not fim:
             try:
                 connection, address = self.s.accept()
                 print(f"Cliente {address} conectado")
@@ -41,7 +41,7 @@ class Maquina:
                 processa.start()
             except Exception as e:
                 print(f"Accept Error: {e}")
-                break
+                continue
 
 if __name__ == "__main__":
     maq = Maquina()

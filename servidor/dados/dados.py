@@ -17,7 +17,8 @@ class Dados:
             "winner": None
         }
         # Initial asteroids
-        for _ in range(5):
+        initial_asteroids_number = 5
+        for _ in range(initial_asteroids_number):
             self.create_asteroid(random.uniform(0, servidor.WIDTH), 
                                random.uniform(0, servidor.HEIGHT), 
                                servidor.ASTEROID_RADIUS_LARGE)

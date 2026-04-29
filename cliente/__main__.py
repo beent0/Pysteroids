@@ -1,17 +1,27 @@
 import sys
+import socket
 import cliente
-from cliente.interface.interface import Interface
 
 if __name__ == "__main__":
+    # Configurações base
     ip = cliente.SERVER_ADDRESS
-    debug = False
-    if len(sys.argv) > 1:
-        for arg in sys.argv[1:]:
-            if arg in ["--debug", "-d"]:
-                debug = True
-            elif "." in arg or "localhost" in arg:
-                ip = arg
-    
-    print(f"[CLIENT] Starting. Server: {ip}, Debug: {debug}")
-    ui = Interface(ip, debug)
-    ui.execute()
+    for arg in sys.argv[1:]:
+        if "." in arg or "localhost" in arg:
+            ip = arg
+
+    # Verifica se o utilizador quer o modo CLI
+    if "--cli" in sys.argv[1:]:
+        from cliente.interface.cli import InterfaceTexto
+        print(f"[CLI] A ligar a {ip}...")
+        
+        # Cria a ligação necessária para a InterfaceTexto
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        sock.connect((ip, cliente.PORT))
+        
+        ui = InterfaceTexto(sock)
+        ui.show_info()
+    else:
+        # Modo Pygame normal (Lazy import para não dar erro sem Pygame)
+        from cliente.interface.interface import Interface
+        ui = Interface(ip, debug="--debug" in sys.argv)
+        ui.execute()
