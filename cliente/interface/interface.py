@@ -10,7 +10,7 @@ import pygame
 import math
 import signal
 import cliente
-from common.socket_helpers import send_object
+from middleware.socket_helpers import send_object
 from cliente.broadcast_receiver import BroadcastReceiver
 
 class Interface:
@@ -33,7 +33,7 @@ class Interface:
         # Pygame setup
         pygame.init()
         self.screen = pygame.display.set_mode((cliente.WIDTH, cliente.HEIGHT))
-        pygame.display.set_caption(f"Asteroids RawTCP - {self.p_id}")
+        pygame.display.set_caption(f"Asteroids - {self.p_id}")
         self.clock = pygame.time.Clock()
         self.font = pygame.font.SysFont("Arial", 18)
         
@@ -114,7 +114,7 @@ class Interface:
         ships, asteroids, lasers, winner = self.receiver.obter_estado()
 
         for a in asteroids:
-            pygame.draw.circle(self.screen, cliente.WHITE, (int(a["x"]), int(a["y"])), int(a["r"]), 2)
+            pygame.d    .circle(self.screen, cliente.WHITE, (int(a["x"]), int(a["y"])), int(a["r"]), 2)
         for l in lasers:
             pygame.draw.circle(self.screen, cliente.YELLOW, (int(l["x"]), int(l["y"])), int(l["r"]))
         

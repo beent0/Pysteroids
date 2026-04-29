@@ -6,7 +6,7 @@ import threading
 import time
 import json
 import servidor
-from common.socket_helpers import send_object
+from middleware.socket_helpers import send_object
 
 class ThreadBroadcast(threading.Thread):
     """Background thread that handles physics updates and periodic state distribution."""

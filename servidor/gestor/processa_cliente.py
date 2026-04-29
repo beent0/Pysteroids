@@ -3,7 +3,7 @@ Individual client command handler.
 Reads move and fire inputs from a specific client and updates the shared game state.
 """
 import threading
-from common.socket_helpers import receive_object
+from middleware.socket_helpers import receive_object
 
 class ProcessaCliente(threading.Thread):
     """Thread responsible for processing incoming messages (Unicast) from a single client."""
@@ -24,6 +24,8 @@ class ProcessaCliente(threading.Thread):
                 msg = receive_object(self.connection)
                 if not msg: break
                 
+                print(f"[{self.address}] Received: {msg}")
+
                 if msg["type"] == "connect":
                     self.p_id = msg["player_id"]
                     print(f"[{self.p_id}] Player connected from {self.address}")

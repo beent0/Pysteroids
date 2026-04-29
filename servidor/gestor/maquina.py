@@ -10,12 +10,12 @@ from servidor.gestor.thread_broadcast import ThreadBroadcast
 from servidor.dados.dados import Dados
 
 class Maquina:
-    """The server 'machine' that coordinates networking and game state."""
     def __init__(self):
         """Initializes the server socket, shared client list, and game data."""
         self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.s.bind(('', servidor.PORT))
+        
         self.lista_clientes = ListaClientes()
         self.dados = Dados()
         

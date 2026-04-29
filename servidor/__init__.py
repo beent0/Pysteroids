@@ -5,7 +5,7 @@ INT_SIZE = 8
 # Screen
 WIDTH = 800
 HEIGHT = 600
-FPS = 60
+FPS = 1
 
 # Entities
 SHIP_RADIUS = 15

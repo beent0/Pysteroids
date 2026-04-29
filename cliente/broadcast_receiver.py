@@ -3,7 +3,7 @@ Inbound state update receiver.
 Listens for periodic game state broadcasts and stores them for the UI loop.
 """
 import threading
-from common.socket_helpers import receive_object
+from middleware.socket_helpers import receive_object
 
 class BroadcastReceiver(threading.Thread):
     """Background thread for receiving JSON game states from the server."""
@@ -27,11 +27,8 @@ class BroadcastReceiver(threading.Thread):
                     with self.lock:
                         self.state = obj
                     
-                    if self.debug and time.time() - self._last_debug_print > 1.0:
-                        ships_count = len(obj.get("ships", {}))
-                        asteroids_count = len(obj.get("asteroids", []))
-                        print(f"IN: State received. Ships: {ships_count}, Asteroids: {asteroids_count}")
-                        self._last_debug_print = time.time()
+                    if self.debug:
+                        print(f"DEBUG: Received state: {obj}")
             except:
                 if self.running:
                     print("Disconnected from server.")
